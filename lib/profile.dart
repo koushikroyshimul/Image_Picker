@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,7 +36,7 @@ class _MyProfileState extends State<MyProfile> {
                         image: DecorationImage(
                           image: _profileImage != null
                               ? MemoryImage(_profileImage!)
-                              : AssetImage('assets/Flutter.jpeg') as ImageProvider,
+                              : AssetImage('assets/Flutter.jpeg') as  ImageProvider,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -52,7 +51,7 @@ class _MyProfileState extends State<MyProfile> {
                       backgroundColor: Colors.white,
                       backgroundImage: _coverImage != null
                           ? MemoryImage(_coverImage!)
-                          : AssetImage('assets/3.png') as ImageProvider,
+                          : AssetImage('assets/3.png') as  ImageProvider,
                     ),
                   ),
                   Positioned(
@@ -241,22 +240,81 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   void _pickProfileImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile == null) return;
-
-    setState(() {
-      selectedProfileImage = File(pickedFile.path);
-      _profileImage = File(pickedFile.path).readAsBytesSync();
-    });
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Image Source"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: Text("Gallery"),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _getImage(ImageSource.gallery, isProfileImage: true);
+                  },
+                ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Text("Camera"),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _getImage(ImageSource.camera, isProfileImage: true);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _pickCoverImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Image Source"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: Text("Gallery"),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _getImage(ImageSource.gallery, isProfileImage: false);
+                  },
+                ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Text("Camera"),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _getImage(ImageSource.camera, isProfileImage: false);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _getImage(ImageSource source, {required bool isProfileImage}) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile == null) return;
 
     setState(() {
-      selectedCoverImage = File(pickedFile.path);
-      _coverImage = File(pickedFile.path).readAsBytesSync();
+      if (isProfileImage) {
+        selectedProfileImage = File(pickedFile.path);
+        _profileImage = File(pickedFile.path).readAsBytesSync();
+      } else {
+        selectedCoverImage = File(pickedFile.path);
+        _coverImage = File(pickedFile.path).readAsBytesSync();
+      }
     });
   }
 }
