@@ -249,7 +249,7 @@ class _MyProfileState extends State<MyProfile> {
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  child: Text("Gallery"),
+                  // child: Text("Gallery"),
                   onTap: () {
                     Navigator.of(context).pop();
                     _getImage(ImageSource.gallery, isProfileImage: true);
